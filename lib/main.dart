@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:json_parsing/SampleJson.dart';
 import 'package:json_parsing/student.dart';
 
 void main() {
@@ -32,8 +34,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   Student? student;
+  SampleJson? sampleJson;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,42 +45,44 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Text(
-              'Name: ${student?.name??""}',
-              style: TextStyle(fontSize: 22),
-            ),
+                "${sampleJson?.firstName ?? ""} ${sampleJson?.lastName ?? ""}".trim()),
             Text(
-              'Last Name: ${student?.lastName??""}',
-              style: TextStyle(fontSize: 22),
-            ),
-            Text(
-              'Pass: ${student?.isPass??""}',
-              style: TextStyle(fontSize: 22),
-            ),
-            Text(
-              'Rank: ${student?.rank??""}',
-              style: TextStyle(fontSize: 22),
+                "${sampleJson?.gender ?? ""} (${sampleJson?.age??0})"),
+            Column(
+              children: sampleJson?.phoneNumbers?.map((e) {
+                return Text("${e.type} = ${e.number}");
+              }).toList()??[],
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          String json="{\"name\":\"Vijay\",\"last_name\":\"Babu\",\"is_pass\":true,\"rank\":0}";
-          Map<String,dynamic>? map = jsonDecode(json);
+        onPressed: () async {
+          // String json="{\"name\":\"Vijay\",\"last_name\":\"Babu\",\"is_pass\":true,\"rank\":0}";
+          // Map<String,dynamic>? map = jsonDecode(json);
+          // student=Student.fromJson(map!);
+          // setState(() {
+          // });
+          //
+          //
+          // print(student?.name);
+          // print(student?.lastName);
+          // print(student?.isPass);
+          // print(student?.rank);
 
-          student=Student.fromJson(map!);
-          setState(() {
-          });
-
-
-          print(student?.name);
-          print(student?.lastName);
-          print(student?.isPass);
-          print(student?.rank);
-
+          var loadString =
+              await rootBundle.loadString("assets/dwsample1-json.json");
+          var loadString2 =
+              await rootBundle.loadString("assets/dwsample3-json.json");
+          print(loadString);
+          print(loadString2);
+          var map = jsonDecode(loadString2);
+          SampleJson.fromJson(map);
+          sampleJson = SampleJson.fromRawJson(loadString2);
+          setState(() {});
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
